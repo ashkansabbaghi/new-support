@@ -1,0 +1,16 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000002",
+  "requestId": "01JREQUEST0000000000002",
+  "type": "SESSION_SET",
+  "sentAt": "2026-08-19T05:30:01.000Z",
+  "payload": {
+    "generation": 1,
+    "credential": {
+      "scheme": "bearer",
+      "value": "test-credential-not-for-logging"
+    }
+  }
+}

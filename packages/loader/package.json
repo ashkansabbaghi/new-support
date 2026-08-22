@@ -1,0 +1,22 @@
+{
+  "name": "@nipoto/support-loader",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CDN loader.js for embedding the Support iframe",
+  "license": "UNLICENSED",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "example": "node scripts/build.mjs && node scripts/serve-example.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@nipoto/support-web-sdk": "workspace:*",
+    "esbuild": "^0.25.12",
+    "typescript": "^5.9.3"
+  }
+}

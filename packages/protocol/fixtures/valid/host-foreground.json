@@ -1,0 +1,10 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000009",
+  "requestId": "01JREQUEST0000000000009",
+  "type": "HOST_FOREGROUND",
+  "sentAt": "2026-08-19T05:30:06.000Z",
+  "payload": {}
+}

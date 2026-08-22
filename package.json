@@ -1,0 +1,35 @@
+{
+  "name": "@nipoto/support",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@4.9.2",
+  "engines": {
+    "node": "^24.0.0",
+    "yarn": "4.9.2"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "yarn workspace @nipoto/support-module dev",
+    "build": "yarn workspace @nipoto/support-module build",
+    "preview": "yarn workspace @nipoto/support-module preview",
+    "typecheck": "yarn workspace @nipoto/support-sdk typecheck && yarn workspace @nipoto/support-module typecheck && yarn workspace @nipoto/support-web-sdk typecheck && yarn workspace @nipoto/support-loader typecheck",
+    "test": "yarn workspace @nipoto/support-protocol test && yarn workspace @nipoto/support-sdk test && yarn workspace @nipoto/support-web-sdk test && yarn workspace @nipoto/support-module test && node scripts/security-smoke.mjs",
+    "lint": "eslint .",
+    "changeset": "changeset"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "@eslint/js": "^9.39.2",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-vue": "^10.6.2",
+    "globals": "^16.5.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.1",
+    "vue-eslint-parser": "^10.2.0",
+    "vue-tsc": "^3.2.1"
+  }
+}

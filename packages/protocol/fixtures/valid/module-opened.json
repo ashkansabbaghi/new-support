@@ -1,0 +1,10 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000024",
+  "requestId": null,
+  "type": "MODULE_OPENED",
+  "sentAt": "2026-08-19T05:30:02.100Z",
+  "payload": { "surface": "chat" }
+}

@@ -1,0 +1,237 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nipoto.dev/support/protocol/1.0/module-events",
+  "title": "V1 module → host event payloads",
+  "$defs": {
+    "MODULE_READY": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["moduleVersion", "protocol", "nonce", "capabilities"],
+      "properties": {
+        "moduleVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[A-Za-z0-9._+-]+$"
+        },
+        "protocol": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "major", "minMinor", "maxMinor"],
+          "properties": {
+            "version": { "type": "string", "const": "1.0" },
+            "major": { "type": "integer", "const": 1 },
+            "minMinor": { "type": "integer", "minimum": 0, "maximum": 0 },
+            "maxMinor": { "type": "integer", "minimum": 0, "maximum": 0 }
+          }
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "capabilities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    },
+    "MODULE_INITIALIZED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["side", "sessionGeneration"],
+      "properties": {
+        "side": { "type": "string", "enum": ["user", "staff"] },
+        "sessionGeneration": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "MODULE_OPENED": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "surface": { "type": "string", "enum": ["chat", "ticket"] }
+      }
+    },
+    "MODULE_CLOSED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["host-requested", "session-cleared", "disposed", "user"]
+        }
+      }
+    },
+    "ROUTE_CHANGED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "conversation.home",
+            "conversation.new",
+            "conversation.view",
+            "conversation.queue",
+            "conversation.history",
+            "ticket.list",
+            "ticket.view"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "conversationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        }
+      }
+    },
+    "UNREAD_COUNT_CHANGED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0, "maximum": 9999 }
+      }
+    },
+    "CONVERSATION_STATE_CHANGED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conversationId", "state"],
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "processing",
+            "opened",
+            "reopened",
+            "staff-replied",
+            "user-replied",
+            "conveyed",
+            "requeued",
+            "closed"
+          ]
+        }
+      }
+    },
+    "EXTERNAL_NAVIGATION_REQUESTED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target"],
+      "properties": {
+        "target": {
+          "type": "string",
+          "enum": ["help", "login", "account", "upgrade"]
+        }
+      }
+    },
+    "NOTIFICATION_REQUESTED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["new-message", "conversation-state", "queue"]
+        },
+        "conversationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      }
+    },
+    "AUTH_REQUIRED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason"],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["unauthorized", "expired", "missing", "revoked"]
+        }
+      }
+    },
+    "MODULE_ERROR": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "category", "retryable", "correlationId"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_ENVELOPE",
+            "ENVELOPE_TOO_LARGE",
+            "UNSUPPORTED_PROTOCOL",
+            "UNKNOWN_TYPE",
+            "UNSUPPORTED_CAPABILITY",
+            "LIFECYCLE_VIOLATION",
+            "INVALID_NONCE",
+            "STALE_GENERATION",
+            "FORBIDDEN_PAYLOAD",
+            "ALREADY_DISPOSED",
+            "INTERNAL"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "validation",
+            "lifecycle",
+            "capability",
+            "auth",
+            "security",
+            "protocol",
+            "internal"
+          ]
+        },
+        "retryable": { "type": "boolean" },
+        "correlationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      }
+    },
+    "MODULE_DISPOSED": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["host-requested", "unmounted"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# Example host headers for a third-party embed (DELIVERY §5.7 / challenge 2).
+# Copy into the host origin's static server / CDN. This is not a backend.
+
+Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.example.com; frame-src https://support.example.com; connect-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'
+
+# Do not set X-Frame-Options: SAMEORIGIN on the *widget* origin.
+# Host pages may set X-Frame-Options for themselves; it does not control embedding the widget.

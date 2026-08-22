@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nipoto Support — vanilla host</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+      }
+      body {
+        margin: 0;
+        padding: 24px;
+        max-width: 720px;
+      }
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 13px;
+      }
+      pre {
+        background: #f4f4f5;
+        padding: 12px;
+        overflow: auto;
+        border-radius: 8px;
+      }
+      button {
+        margin-inline-end: 8px;
+        margin-block-end: 8px;
+        padding: 8px 12px;
+      }
+      .note {
+        background: #fff7ed;
+        border: 1px solid #fdba74;
+        padding: 12px 16px;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Vanilla host</h1>
+    <p>
+      This page has <strong>zero</strong> Vue / Pinia / Tailwind from the Support app.
+      The snippet below is the install surface: public <code>data-widget-id</code> and
+      <code>data-locale</code> only.
+    </p>
+
+    <pre>&lt;script
+  src="/loader.js"
+  data-widget-id="wid_public_example"
+  data-locale="fa-IR"
+  async
+&gt;&lt;/script&gt;</pre>
+
+    <p class="note">
+      <strong>Session:</strong> <code>setSession</code> is a generation bump, not a login.
+      The iframe credential is the <code>user-token</code> / <code>staff-token</code> cookie
+      on a same-site cookie domain. There is no login form here and tokens are not written
+      to <code>localStorage</code> or the URL. If you are not already logged in on that
+      cookie domain, <code>AUTH_REQUIRED</code> is expected and correct.
+    </p>
+
+    <p>
+      Run the module with <code>yarn dev</code> (default
+      <code>http://localhost:5173</code>) and this page via
+      <code>yarn workspace @nipoto/support-loader example</code>
+      (<code>http://localhost:4174</code>).
+      Staff console: add <code>data-side="staff"</code> on the loader script
+      (uses the <code>staff-token</code> cookie), then
+      <code>setSession</code> and navigate <code>ticket.list</code>.
+      Or open the module directly at
+      <code>http://localhost:5173/#/ticket/list</code> (fixture demo).
+    </p>
+
+    <p>
+      <button type="button" id="btn-session">setSession</button>
+      <button type="button" id="btn-open">open</button>
+      <button type="button" id="btn-nav-home">navigate home</button>
+      <button type="button" id="btn-nav-history">navigate history</button>
+      <button type="button" id="btn-nav-tickets">navigate tickets</button>
+      <button type="button" id="btn-close">close</button>
+      <button type="button" id="btn-destroy">destroy</button>
+    </p>
+    <h2>Events</h2>
+    <pre id="log">waiting for loader…</pre>
+
+    <script
+      src="/loader.js"
+      data-widget-id="wid_public_example"
+      data-locale="fa-IR"
+      async
+    ></script>
+    <script>
+      const logEl = document.getElementById('log')
+      const lines = []
+
+      function log(line) {
+        lines.push(line)
+        logEl.textContent = lines.join('\n')
+      }
+
+      function api() {
+        return window.NipotoSupport
+      }
+
+      function waitForApi() {
+        if (api()) {
+          wire()
+          return
+        }
+        setTimeout(waitForApi, 50)
+      }
+
+      function wire() {
+        const support = api()
+        ;['ready', 'initialized', 'opened', 'closed', 'disposed', 'auth-required', 'error', 'resize', 'route-changed', 'notification'].forEach(
+          (event) => {
+            support.on(event, (payload) => {
+              const extra = payload && payload.payload ? JSON.stringify(payload.payload) : ''
+              log(event + (extra ? ' ' + extra : ''))
+            })
+          },
+        )
+        log('loader present — waiting for MODULE_READY / HOST_INIT')
+
+        document.getElementById('btn-session').onclick = () => {
+          support.setSession().then(
+            () => log('setSession ok'),
+            (error) => log('setSession failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-open').onclick = () => {
+          support.open().then(
+            () => log('open ok'),
+            (error) => log('open failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-nav-home').onclick = () => {
+          support.navigate({ name: 'conversation.home' }).then(
+            () => log('navigate home ok'),
+            (error) => log('navigate failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-nav-history').onclick = () => {
+          support.navigate({ name: 'conversation.history' }).then(
+            () => log('navigate history ok'),
+            (error) => log('navigate failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-nav-tickets').onclick = () => {
+          support.navigate({ name: 'ticket.list' }).then(
+            () => log('navigate tickets ok'),
+            (error) => log('navigate failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-close').onclick = () => {
+          support.close().then(
+            () => log('close ok'),
+            (error) => log('close failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+        document.getElementById('btn-destroy').onclick = () => {
+          support.destroy().then(
+            () => log('destroy ok — host iframe/listeners/styles removed'),
+            (error) => log('destroy failed: ' + (error && error.message ? error.message : error)),
+          )
+        }
+      }
+
+      waitForApi()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nipoto.dev/support/protocol/1.0/defs",
+  "title": "Shared protocol definitions",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "nonce": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "isoDateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "protocolVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "channel": {
+      "type": "string",
+      "const": "nipoto.support"
+    },
+    "side": {
+      "type": "string",
+      "enum": ["user", "staff"]
+    },
+    "direction": {
+      "type": "string",
+      "enum": ["ltr", "rtl"]
+    },
+    "theme": {
+      "type": "string",
+      "enum": ["light", "dark", "system"]
+    },
+    "locale": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32,
+      "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$"
+    },
+    "routeName": {
+      "type": "string",
+      "enum": [
+        "conversation.home",
+        "conversation.new",
+        "conversation.view",
+        "conversation.queue",
+        "conversation.history",
+        "ticket.list",
+        "ticket.view"
+      ]
+    },
+    "routeParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "conversationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      }
+    },
+    "capability": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "failureCode": {
+      "type": "string",
+      "enum": [
+        "INVALID_ENVELOPE",
+        "ENVELOPE_TOO_LARGE",
+        "UNSUPPORTED_PROTOCOL",
+        "UNKNOWN_TYPE",
+        "UNSUPPORTED_CAPABILITY",
+        "LIFECYCLE_VIOLATION",
+        "INVALID_NONCE",
+        "STALE_GENERATION",
+        "FORBIDDEN_PAYLOAD",
+        "ALREADY_DISPOSED",
+        "INTERNAL"
+      ]
+    },
+    "failureCategory": {
+      "type": "string",
+      "enum": [
+        "validation",
+        "lifecycle",
+        "capability",
+        "auth",
+        "security",
+        "protocol",
+        "internal"
+      ]
+    },
+    "conversationState": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "processing",
+        "opened",
+        "reopened",
+        "staff-replied",
+        "user-replied",
+        "conveyed",
+        "requeued",
+        "closed"
+      ]
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "branding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brandId"],
+      "properties": {
+        "brandId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[^<>\\n\\r]*$"
+        }
+      }
+    },
+    "hostInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["appId", "appVersion", "branding", "platform"],
+      "properties": {
+        "appId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9._-]+$"
+        },
+        "appVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[A-Za-z0-9._+-]+$"
+        },
+        "branding": { "$ref": "#/$defs/branding" },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "pattern": "^[a-z0-9._-]+$"
+        }
+      }
+    }
+  }
+}

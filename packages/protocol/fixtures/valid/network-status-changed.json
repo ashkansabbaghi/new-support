@@ -1,0 +1,12 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000011",
+  "requestId": "01JREQUEST0000000000011",
+  "type": "NETWORK_STATUS_CHANGED",
+  "sentAt": "2026-08-19T05:30:08.000Z",
+  "payload": {
+    "online": false
+  }
+}

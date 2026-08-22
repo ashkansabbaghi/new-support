@@ -1,0 +1,7 @@
+# Example widget-origin headers (the iframe document). Static / CDN only.
+
+Content-Security-Policy: default-src 'self'; frame-ancestors https://www.example.com https://shop.example.com https://localhost:4174; script-src 'self'; connect-src 'self' https://b1-back.nipoto.pro wss://b1-back.nipoto.pro; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'self'
+
+# Required: frame-ancestors is the allowlist. Do NOT send:
+#   X-Frame-Options: SAMEORIGIN
+# That header blocks cross-origin embed and is not equivalent to frame-ancestors.

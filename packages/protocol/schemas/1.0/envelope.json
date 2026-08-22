@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nipoto.dev/support/protocol/1.0/envelope",
+  "title": "Host↔module envelope",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "channel",
+    "protocolVersion",
+    "instanceId",
+    "messageId",
+    "requestId",
+    "type",
+    "sentAt",
+    "payload"
+  ],
+  "properties": {
+    "channel": { "type": "string", "const": "nipoto.support" },
+    "protocolVersion": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$"
+    },
+    "instanceId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "messageId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "requestId": {
+      "type": ["string", "null"],
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "HOST_INIT",
+        "SESSION_SET",
+        "SESSION_CLEAR",
+        "MODULE_OPEN",
+        "MODULE_CLOSE",
+        "NAVIGATE",
+        "LOCALE_SET",
+        "THEME_SET",
+        "HOST_FOREGROUND",
+        "HOST_BACKGROUND",
+        "NETWORK_STATUS_CHANGED",
+        "BACK_REQUESTED",
+        "DISPOSE",
+        "MODULE_READY",
+        "MODULE_INITIALIZED",
+        "MODULE_OPENED",
+        "MODULE_CLOSED",
+        "ROUTE_CHANGED",
+        "UNREAD_COUNT_CHANGED",
+        "CONVERSATION_STATE_CHANGED",
+        "EXTERNAL_NAVIGATION_REQUESTED",
+        "NOTIFICATION_REQUESTED",
+        "AUTH_REQUIRED",
+        "MODULE_ERROR",
+        "MODULE_DISPOSED",
+        "COMMAND_SUCCEEDED",
+        "COMMAND_FAILED"
+      ]
+    },
+    "sentAt": { "type": "string", "format": "date-time" },
+    "payload": { "type": "object" }
+  }
+}

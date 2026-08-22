@@ -1,0 +1,23 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000001",
+  "requestId": "01JREQUEST0000000000001",
+  "type": "HOST_INIT",
+  "sentAt": "2026-08-19T05:30:00.000Z",
+  "payload": {
+    "nonce": "01JNONCE000000000000001",
+    "side": "user",
+    "locale": "fa-IR",
+    "direction": "rtl",
+    "theme": "light",
+    "initialRoute": { "name": "conversation.home" },
+    "host": {
+      "appId": "nipoto-web",
+      "appVersion": "1.4.2",
+      "branding": { "brandId": "nipoto", "displayName": "<script>alert(1)</script>" },
+      "platform": "web"
+    }
+  }
+}

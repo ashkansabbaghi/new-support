@@ -1,0 +1,32 @@
+{
+  "name": "@nipoto/support-protocol",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Versioned host↔module protocol schemas, types, and handshake machine",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "schemas",
+    "src"
+  ],
+  "scripts": {
+    "generate": "node scripts/generate-types.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

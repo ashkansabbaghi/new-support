@@ -1,0 +1,16 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000020",
+  "requestId": "01JREQUEST0000000000099",
+  "type": "COMMAND_FAILED",
+  "sentAt": "2026-08-19T05:30:00.100Z",
+  "payload": {
+    "code": "UNSUPPORTED_CAPABILITY",
+    "category": "capability",
+    "retryable": false,
+    "correlationId": "01JREQUEST0000000000099",
+    "command": "HOST_INIT"
+  }
+}

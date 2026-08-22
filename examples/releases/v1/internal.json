@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "channel": "internal",
+  "protocol": {
+    "major": 1,
+    "minMinor": 0,
+    "maxMinor": 0,
+    "version": "1.0"
+  },
+  "module": {
+    "version": "0.0.0",
+    "url": "https://cdn.example.com/support/v1/internal/index.html",
+    "integrity": "sha384-PLACEHOLDER"
+  },
+  "loader": {
+    "version": "0.0.0",
+    "url": "https://cdn.example.com/widget/v1/loader.js",
+    "integrity": "sha384-PLACEHOLDER"
+  }
+}

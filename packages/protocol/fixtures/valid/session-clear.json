@@ -1,0 +1,13 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000003",
+  "requestId": "01JREQUEST0000000000003",
+  "type": "SESSION_CLEAR",
+  "sentAt": "2026-08-19T05:31:00.000Z",
+  "payload": {
+    "generation": 2,
+    "reason": "logout"
+  }
+}

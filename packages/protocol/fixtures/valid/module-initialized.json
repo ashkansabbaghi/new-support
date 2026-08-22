@@ -1,0 +1,13 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000015",
+  "requestId": null,
+  "type": "MODULE_INITIALIZED",
+  "sentAt": "2026-08-19T05:30:01.500Z",
+  "payload": {
+    "side": "user",
+    "sessionGeneration": 1
+  }
+}

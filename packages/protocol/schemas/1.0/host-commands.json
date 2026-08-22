@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nipoto.dev/support/protocol/1.0/host-commands",
+  "title": "V1 host → module command payloads",
+  "$defs": {
+    "HOST_INIT": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nonce",
+        "side",
+        "locale",
+        "direction",
+        "theme",
+        "initialRoute",
+        "host"
+      ],
+      "properties": {
+        "nonce": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "side": { "type": "string", "enum": ["user", "staff"] },
+        "locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$"
+        },
+        "direction": { "type": "string", "enum": ["ltr", "rtl"] },
+        "theme": { "type": "string", "enum": ["light", "dark", "system"] },
+        "initialRoute": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": [
+                "conversation.home",
+                "conversation.new",
+                "conversation.view",
+                "conversation.queue",
+                "conversation.history",
+                "ticket.list",
+                "ticket.view"
+              ]
+            }
+          }
+        },
+        "host": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["appId", "appVersion", "branding", "platform"],
+          "properties": {
+            "appId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[A-Za-z0-9._-]+$"
+            },
+            "appVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^[A-Za-z0-9._+-]+$"
+            },
+            "branding": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["brandId"],
+              "properties": {
+                "brandId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[A-Za-z0-9._-]+$"
+                },
+                "displayName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[^<>\\n\\r]*$"
+                }
+              }
+            },
+            "platform": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 32,
+              "pattern": "^[a-z0-9._-]+$"
+            }
+          }
+        },
+        "requiredCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 32,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    },
+    "SESSION_SET": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generation", "credential"],
+      "properties": {
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "credential": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scheme", "value"],
+          "properties": {
+            "scheme": { "type": "string", "const": "bearer" },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8192
+            }
+          }
+        }
+      }
+    },
+    "SESSION_CLEAR": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generation"],
+      "properties": {
+        "generation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reason": {
+          "type": "string",
+          "enum": ["logout", "account-switch", "expired", "host-requested"]
+        }
+      }
+    },
+    "MODULE_OPEN": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "surface": { "type": "string", "enum": ["chat", "ticket"] }
+      }
+    },
+    "MODULE_CLOSE": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["host-requested", "user"]
+        }
+      }
+    },
+    "NAVIGATE": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "conversation.home",
+            "conversation.new",
+            "conversation.view",
+            "conversation.queue",
+            "conversation.history",
+            "ticket.list",
+            "ticket.view"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "conversationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_-]+$"
+            }
+          }
+        },
+        "replace": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "enum": ["conversation.view", "ticket.view"]
+              }
+            },
+            "required": ["name"]
+          },
+          "then": {
+            "required": ["params"],
+            "properties": {
+              "params": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["conversationId"],
+                "properties": {
+                  "conversationId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LOCALE_SET": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["locale"],
+      "properties": {
+        "locale": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$"
+        },
+        "direction": { "type": "string", "enum": ["ltr", "rtl"] }
+      }
+    },
+    "THEME_SET": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theme"],
+      "properties": {
+        "theme": { "type": "string", "enum": ["light", "dark", "system"] }
+      }
+    },
+    "HOST_FOREGROUND": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "HOST_BACKGROUND": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "NETWORK_STATUS_CHANGED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["online"],
+      "properties": {
+        "online": { "type": "boolean" }
+      }
+    },
+    "BACK_REQUESTED": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "DISPOSE": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": ["host-requested", "unmounted"]
+        }
+      }
+    }
+  }
+}

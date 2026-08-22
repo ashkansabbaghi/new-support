@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nipoto.dev/support/protocol/1.0/results",
+  "title": "V1 command results",
+  "$defs": {
+    "COMMAND_SUCCEEDED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string",
+          "enum": [
+            "HOST_INIT",
+            "SESSION_SET",
+            "SESSION_CLEAR",
+            "MODULE_OPEN",
+            "MODULE_CLOSE",
+            "NAVIGATE",
+            "LOCALE_SET",
+            "THEME_SET",
+            "HOST_FOREGROUND",
+            "HOST_BACKGROUND",
+            "NETWORK_STATUS_CHANGED",
+            "BACK_REQUESTED",
+            "DISPOSE"
+          ]
+        },
+        "handled": { "type": "boolean" }
+      }
+    },
+    "COMMAND_FAILED": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "category", "retryable", "correlationId"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_ENVELOPE",
+            "ENVELOPE_TOO_LARGE",
+            "UNSUPPORTED_PROTOCOL",
+            "UNKNOWN_TYPE",
+            "UNSUPPORTED_CAPABILITY",
+            "LIFECYCLE_VIOLATION",
+            "INVALID_NONCE",
+            "STALE_GENERATION",
+            "FORBIDDEN_PAYLOAD",
+            "ALREADY_DISPOSED",
+            "INTERNAL"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "validation",
+            "lifecycle",
+            "capability",
+            "auth",
+            "security",
+            "protocol",
+            "internal"
+          ]
+        },
+        "retryable": { "type": "boolean" },
+        "correlationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "command": {
+          "type": "string",
+          "enum": [
+            "HOST_INIT",
+            "SESSION_SET",
+            "SESSION_CLEAR",
+            "MODULE_OPEN",
+            "MODULE_CLOSE",
+            "NAVIGATE",
+            "LOCALE_SET",
+            "THEME_SET",
+            "HOST_FOREGROUND",
+            "HOST_BACKGROUND",
+            "NETWORK_STATUS_CHANGED",
+            "BACK_REQUESTED",
+            "DISPOSE"
+          ]
+        }
+      }
+    }
+  }
+}

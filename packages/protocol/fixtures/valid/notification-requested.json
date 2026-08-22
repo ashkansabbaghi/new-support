@@ -1,0 +1,13 @@
+{
+  "channel": "nipoto.support",
+  "protocolVersion": "1.0",
+  "instanceId": "01JINSTANCE0000000000001",
+  "messageId": "01JMESSAGE00000000000018",
+  "requestId": null,
+  "type": "NOTIFICATION_REQUESTED",
+  "sentAt": "2026-08-19T05:30:12.000Z",
+  "payload": {
+    "kind": "new-message",
+    "conversationId": "chat_123456"
+  }
+}
