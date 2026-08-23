@@ -60,11 +60,7 @@ stack هدف و ADR در [ARCHITECTURE](./ARCHITECTURE.md). نصب و CSP در [
 
 ## ۵. خط زمانی بک‌اند
 
-| فاز | مسیر کلاینت | API جدید |
-| --- | --- | --- |
-| فاز ۰–۲ (V1 فرانت) | کلاینت → SupportGateway روی `$app` / ABR | ممنوع |
-| فاز ۲–۳ (parity) | همان Gateway یا thin BFF روی `$app` موجود | فقط additive. پیشنهادهای B1–B8 روی ABR |
-| فاز ۴+ (هدف محصول) | کلاینت → REST/OpenAPI سرویس NestJS مستقل. ABR پشت API | قرارداد رسمی |
+جدول کامل فازها در [ARCHITECTURE](./ARCHITECTURE.md) §۱۳ است (منبع واحد؛ اینجا کپی نمی‌شود تا دو نسخه از هم drift نکنند). خلاصه: فاز ۰–۲ فقط SupportGateway روی `$app`؛ فاز ۲–۳ additive روی همان ABR (پیشنهادهای B1–B8)؛ فاز ۴+ کلاینت → REST/OpenAPI سرویس NestJS مستقل، ABR پشت API.
 
 ## ۶. کارهایی که الان نباید بکنیم
 
@@ -88,6 +84,8 @@ stack هدف و ADR در [ARCHITECTURE](./ARCHITECTURE.md). نصب و CSP در [
 6. آیا open / send / close / convey idempotentاند؟
 7. آیا سرور list / filter / convey را enforce می‌کند (B4)؟
 8. originهای CDN / widget / API در هر محیط چیست؟
+
+سؤالات معماری عمومی‌تر (حداقل نسخهٔ مرورگر هدف، چند instance هم‌زمان، sink observability و ...) در [ARCHITECTURE](./ARCHITECTURE.md) §۱۴ است؛ این‌جا فقط تکرار نمی‌شوند.
 
 ## ۸. بعد از این چه بخوانم؟
 

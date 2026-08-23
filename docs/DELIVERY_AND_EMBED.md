@@ -41,6 +41,8 @@ flowchart TB
 
 loader فقط config، lifecycle، open / close، resize و `postMessage` را مدیریت می‌کند. UI، state و business logic داخل iframe می‌مانند. کنسول staff همان وب است (واکنش‌گرا روی دسکتاپ و مرورگر موبایل).
 
+این دیاگرام معماری هدف (فاز ۴+) را نشان می‌دهد. مسیر V1 داخل iframe، `SupportGateway` روی `$app` / ABR است، نه تماس مستقیم با REST/OpenAPI؛ دیاگرام V1 در [ONBOARDING](./ONBOARDING.md) §۴ است.
+
 ## ۳. جدول stack هر لایه
 
 | لایه | انتخاب |
@@ -109,7 +111,7 @@ PostgreSQL منبع حقیقت message / conversation / assignment / audit. Redi
 
 ### ۵.۷ Auth و امنیت embedding
 
-anonymous session و authenticated embed token کوتاه‌عمر و scoped. برای کاربر لاگین‌شده، token ترجیحاً server-to-server صادر و بعد از handshake به iframe. معماری به third-party cookie وابسته نیست. `postMessage` با `targetOrigin` دقیق، بررسی `origin` / `source` و schema. `widget-id` به tenant و domain allowlist وصل است.
+anonymous session و authenticated embed token کوتاه‌عمر و scoped. برای کاربر لاگین‌شده، token ترجیحاً server-to-server صادر و بعد از handshake به iframe — این هدف فاز ۴+ است؛ در V1 همان کوکی موجود طبق [ARCHITECTURE](./ARCHITECTURE.md) §۷ استفاده می‌شود و `SESSION_SET` فقط generation را bump می‌کند، نه issuance توکن جدید. معماری هدف به third-party cookie وابسته نیست. `postMessage` با `targetOrigin` دقیق، بررسی `origin` / `source` و schema. `widget-id` به tenant و domain allowlist وصل است.
 
 host: CDN در `script-src`، widget origin در `frame-src`. widget: `frame-ancestors` فقط domainهای مجاز. `X-Frame-Options: SAMEORIGIN` با embed میان‌دامنه‌ای سازگار نیست. CORS فقط originهای لازم؛ wildcard جای authorization را نمی‌گیرد.
 
@@ -149,7 +151,7 @@ Roadmap: ۱) قرارداد OpenAPI / AsyncAPI، session، domain policy، proto
 | ۱ | استقلال از framework میزبان | loader فقط iframe؛ UI داخل origin جدا. Shadow DOM مسیر محصول نیست |
 | ۲ | iframe isolation و CSP | host: `script-src` CDN + `frame-src` widget. widget: `frame-ancestors` از allowlist. نه `X-Frame-Options: SAMEORIGIN`. sandbox حداقلی |
 | ۳ | CORS | درخواست از origin ویجت است. CORS فقط همان + origin مدیریتی |
-| ۴ | third-party cookie | وابسته نباشید. ناشناس: session کوتاه‌عمر همان widget / domain. لاگین‌شده: token scoped از server میزبان. token فقط memory بعد از `SESSION_SET`. Safari موبایل / ITP در ماتریس است |
+| ۴ | third-party cookie | معماری هدف وابسته نباشد. ناشناس: session کوتاه‌عمر همان widget / domain. لاگین‌شده (فاز ۴+): token scoped از server میزبان؛ در V1 همان کوکی موجود (ARCHITECTURE §۷). token فقط memory بعد از `SESSION_SET`. Safari موبایل / ITP در ماتریس است |
 | ۵ | امنیت `postMessage` | `targetOrigin` دقیق؛ `event.origin` و `event.source`؛ schema و version؛ فقط command محدود (`ready` / `open` / `close` / `resize` / `setLocale` / `setSession`)؛ بدون HTML / selector / URL / JS از message |
 | ۶ | tenant و domain allowlist | هر `widget-id` → tenant + config + allowlist. session و `frame-ancestors` از همین policy. wildcard فقط زیردامنهٔ کنترل‌شده با تصمیم صریح. preview موقت policy جدا |
 | ۷ | CDN و versioning | loader کوچک و API پایدار. `/v1/` در برابر pin. canary روی `widget-id`. changelog و دورهٔ deprecation. pin + SRI در برابر update خودکار |

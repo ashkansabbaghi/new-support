@@ -99,6 +99,8 @@ Deep Link به‌تنهایی lifecycle، unread، session refresh را حل ن�
 
 وابستگی: Presentation ← Application ← interfaceهای Gateway / Bridge. implementation بک‌اند و host در لبه. هیچ feature نباید مستقیماً `window.parent` را صدا بزند.
 
+کش server-state فقط با TanStack Vue Query (بخش ۱۲) نگه‌داری می‌شود؛ لایهٔ Session / Realtime کش مستقل خودش را نگه نمی‌دارد، فقط با query key معین آن را invalidate / refetch می‌کند. کوئری هرگز مستقل از Gateway / Realtime داده را poll نمی‌کند.
+
 اگر client موجود فقط cookie می‌پذیرد و credential injection ندارد، blocker فاز صفر است. راه‌حل هدف package / adapter همان client است؛ proxy دائمی همهٔ commandها از host ایزولاسیون را نقض می‌کند.
 
 ## ۶. Protocol
@@ -125,7 +127,7 @@ Deep Link به‌تنهایی lifecycle، unread، session refresh را حل ن�
 - response همان `requestId` را برمی‌گرداند
 - field ناشناخته در minor نادیده؛ capability اجباریِ ناشناخته → `UNSUPPORTED_CAPABILITY`
 - payload خام، credential و متن پیام log نشوند
-- سقف اندازهٔ پیام bridge تعریف می‌شود؛ attachment از bridge عبور نمی‌کند
+- سقف اندازهٔ envelope روی bridge ۶۴ کیلوبایت است (اندازهٔ UTF-8 پیام سریالایز‌شده)؛ تخطی → `ENVELOPE_TOO_LARGE`. attachment هرگز از این مسیر عبور نمی‌کند
 
 منبع حقیقت protocol: JSON Schema Draft 2020-12. hostها TypeScript-only نیستند.
 
@@ -133,7 +135,7 @@ Deep Link به‌تنهایی lifecycle، unread، session refresh را حل ن�
 
 1. host URL بدون secret را از origin allowlisted بارگذاری می‌کند
 2. module `MODULE_READY` (version، protocol range، nonce، capability) می‌فرستد
-3. host origin / source / nonce را بررسی و transport اختصاصی برقرار می‌کند
+3. host origin / source / nonce را بررسی و transport اختصاصی برقرار می‌کند؛ mismatch در حد protocol major → `UNSUPPORTED_PROTOCOL` (جدا از `UNSUPPORTED_CAPABILITY` که برای یک capability ناشناخته داخل یک major سازگار است)
 4. host `HOST_INIT` با config غیرحساس می‌فرستد
 5. credential با `SESSION_SET` فقط روی channel تأییدشده
 6. پس از bootstrap بک‌اند، `MODULE_INITIALIZED`
@@ -153,6 +155,22 @@ host فرمان دامنه (`SEND_MESSAGE`، `CLOSE_CHAT`، `CONVEY_CHAT`) ند�
 data-minimized: مثلاً `UNREAD_COUNT_CHANGED` فقط count است، نه متن پیام. متن message، email، mobile، attachment و token از bridge عبور نکند مگر policy مصوب.
 
 نتیجه: `COMMAND_SUCCEEDED` یا `COMMAND_FAILED` با `code`، `category`، `retryable`، `correlationId`. stack trace فقط داخل telemetry ماژول.
+
+واژگان پایدار `code`:
+
+| `code` | معنی |
+| --- | --- |
+| `INVALID_ENVELOPE` | envelope با schema نسخهٔ فعلی مطابقت ندارد یا JSON نامعتبر است |
+| `ENVELOPE_TOO_LARGE` | بیش از سقف ۶۴ کیلوبایت |
+| `UNSUPPORTED_PROTOCOL` | protocol major هندشیک با module ناسازگار است |
+| `UNKNOWN_TYPE` | `type` پیام در schema نسخهٔ فعلی تعریف نشده |
+| `UNSUPPORTED_CAPABILITY` | capability اجباری اعلام‌شده توسط طرف مقابل ناشناخته است |
+| `LIFECYCLE_VIOLATION` | command برای state فعلی مجاز نیست (بخش ۸) |
+| `INVALID_NONCE` | nonce هندشیک نامعتبر یا مصرف‌شده است |
+| `STALE_GENERATION` | پیام مربوط به generation قدیمی session است؛ نادیده گرفته می‌شود |
+| `FORBIDDEN_PAYLOAD` | کلید ممنوعه (attachment، HTML، token) در payload bridge |
+| `ALREADY_DISPOSED` | command بعد از `DISPOSE` رسیده |
+| `INTERNAL` | خطای داخلی غیرمنتظره |
 
 API میزبان: `open` / `close` / `navigate` / `setSession` / `dispose`.
 
@@ -182,7 +200,7 @@ logout: `SESSION_CLEAR` با generation جدید → cancel subscription و پا
 4. same-site cookie فقط compatibility mode است — iframe و third-party cookie (از جمله Safari موبایل) سیاست یکسان ندارند
 5. refresh: host credential با generation بالاتر؛ module اتصال قبلی را قطع و دوباره bootstrap می‌کند
 6. logout / account switch: `SESSION_CLEAR` → cancel subscription → پاک کردن cache / draft / object URL → state بدون session
-7. `401` یا قطع auth realtime → `AUTH_REQUIRED`؛ retry loop نامحدود ممنوع
+7. `401` یا قطع auth realtime → `AUTH_REQUIRED`؛ دقیقاً یک‌بار به ازای هر generation emit می‌شود، بدون retry خودکار؛ ماژول تا `SESSION_SET` جدید با generation بالاتر از میزبان صبر می‌کند
 
 credential وارد store / devtools نمی‌شود.
 
@@ -257,6 +275,8 @@ rollback با تغییر release manifest / CDN alias به artifact قبلی؛ r
 | ADR-006 | token و message history persist نشوند؛ storage فقط preference غیرحساس و cache مصوب | token حساس است؛ storage policy بین مرورگر / iframe یکسان نیست | Accepted |
 | ADR-007 | read cache محدود مجاز؛ offline mutation queue ممنوع | idempotency `open` / `send` / `close` / `reopen` / `convey` در repo معلوم نیست | Accepted |
 | ADR-008 | Yarn 4 workspace بدون Nx / Turborepo در شروع | repo همین حالا Yarn 4 را pin کرده | Accepted |
+| ADR-009 | Hash history (`#/`) برای routing نسخهٔ اول، نه History API | بدون نیاز به rewrite روی همهٔ CDN / میزبان‌های وب | Accepted |
+| ADR-010 | `widget-id` عمومی و غیر-secret؛ authorization فقط از credential بعد از handshake می‌آید | tenant / config به شناسه نیاز دارد، ولی امنیت نباید به مخفی ماندن آن متکی باشد | Accepted |
 
 آزمون پذیرش ADR: host vanilla HTML بدون runtime اپ Support بتواند باز و dispose کند؛ هیچ import از `src/utils/*` یا store میزبان در app جدید نباشد؛ logout cache و session را پاک کند؛ reconnect command تکراری نسازد؛ fixtureهای معتبر / نامعتبر در Web SDK نتیجهٔ یکسان بدهند.
 
